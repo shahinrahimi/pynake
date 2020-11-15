@@ -14,6 +14,13 @@ class Snake():
         self.body = []
         self.tail = None
 
+class Direction():
+    STOP = (0,0)
+    RIGHT = (1,0)
+    LEFT = (-1,0)
+    UP = (0,-1)
+    DOWN = (0,1)
+
 class Colors():
     BACKGROUND_COLOR = (0,0,0)
     RED_COLOR = (255,0,0)
@@ -37,24 +44,25 @@ class Game():
         self.init_player()
 
         self.player = []
-        self.player_direction = (0,0)
+        self.player_curdire = Direction().STOP
 
     def run(self):
         running = True
         while running:
-            events = pygame.event.get()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+
             key_input = pygame.key.get_pressed()
-            if key_input[pygame.K_LEFT]:
-                self.player_direction = (-1,0)
-            if key_input[pygame.K_UP]:
-                self.player_direction = (0,-1)
-            if key_input[pygame.K_RIGHT]:
-                self.player_direction = (1,0)
-            if key_input[pygame.K_DOWN]:
-                self.player_direction = (0,1)
+            print(self.player_curdire)
+            if key_input[pygame.K_LEFT] and self.player_curdire != Direction.RIGHT:
+                self.player_curdire = Direction.LEFT
+            if key_input[pygame.K_UP] and self.player_curdire != Direction.DOWN:
+                self.player_curdire = Direction.UP
+            if key_input[pygame.K_RIGHT] and self.player_curdire != Direction.LEFT:
+                self.player_curdire = Direction.RIGHT
+            if key_input[pygame.K_DOWN] and self.player_curdire != Direction.UP:
+                self.player_curdire = Direction.DOWN
             self.render_cells()
             pygame.display.update()
         pygame.quit()
