@@ -2,10 +2,13 @@ import pygame
 import random
 
 class Cell():
-    def __init__(self,pos):
-        x,y = pos
-        self.x = x
-        self.y = y
+    def __init__(self,row,column,size_width,size_height):
+        self.size_width = size_width
+        self.size_hieght = size_height
+        self.row = row
+        self.column = column
+        self.x = self.column*self.size_width
+        self.y = self.row*self.size_hieght
         self.state = 0 # 0 is empty 1 is has some food 2 is accupyied
         self.color = Colors.BACKGROUND_COLOR
 class Snake():
@@ -39,12 +42,12 @@ class Game():
         self.cell_count_x = self.width//self.cell_size_width
         self.cell_count_y = self.height//self.cell_size_height
 
+        self.player_curdire = Direction().STOP
+
         self.cells = []
         self.init_cells()
-        self.init_player()
-
         self.player = []
-        self.player_curdire = Direction().STOP
+        self.init_player()
 
     def run(self):
         running = True
@@ -69,19 +72,61 @@ class Game():
 
     def init_cells(self):
         for cell_column in range(0,self.cell_count_x):
-            x_pos = cell_column * self.cell_size_width
             for cell_row in range(0,self.cell_count_y):
-                y_pos = cell_row * self.cell_size_height
-                pos = (x_pos,y_pos)
-                cell = Cell(pos)
-                cell.color = Colors.RED_COLOR
+                cell = Cell(cell_row,cell_column,self.cell_size_width,self.cell_size_height)
                 self.cells.append(cell)
 
     def init_player(self):
-        player = random.choice(self.cells)
-        player.color = Colors().BLUE_COlOR
+        head = random.choice(self.cells)
+        self.cell_convert_to_player(head)
+        self.player.append(head)
 
+    def cell_convert_to_player(self,cell):
+        cell.color = Colors().GREEN_COLOR
+        cell.state = 2
+    def cell_convert_to_blank(self,cell):
+        cell.color = Colors().BACKGROUND_COLOR
+        cell.state = 0
 
+    def player_move(self):
+        old_head = self.player[0]
+        new_head = self.get_cell_by_curdir()
+        self.cell_convert_to_player(new_head)
+        self.cell_convert_to_blank(old_head)
+        self.player.remove(old_head)
+        self.player.append(new_head)
+
+    def get_cell_by_curdir(self):
+        head = self.player[0]
+        cur_row = head.row
+        cur_col = head.column
+        cur_dir_x,cur_dir_y = self.player_curdire
+        des_row = cur_row + cur_dir_y
+        des_col = cur_col + cur_dir_x
+        des_row = self.get_available_row(des_row)
+        des_col = self.get_available_col(des_col)
+        return self.get_cell_by_grid(des_row,des_col)
+
+    def get_available_row(self,row):
+        if row > -1:
+            if not row < self.cell_count_y:
+                row = 0
+        else:
+            row = self.cell_count_y - 1
+        return row
+
+    def get_available_col(self,column):
+        if column > -1:
+            if not column < self.cell_count_x:
+                column = 0
+        else:
+            column = self.cell_count_x - 1
+        return column
+
+    def get_cell_by_grid(self,row,column):
+        for cell in self.cells:
+            if cell.row == row and cell.column == column:
+                return cell
     def render_cells(self):
         screen = self.screen
         for cell in self.cells:
