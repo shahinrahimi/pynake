@@ -37,8 +37,8 @@ class Game():
         self.width = 800
         self.screen = pygame.display.set_mode((self.width, self.height))
         self.screen.fill(Colors().BACKGROUND_COLOR)
-        self.cell_size_width = 80
-        self.cell_size_height = 80
+        self.cell_size_width = 10
+        self.cell_size_height = 10
         self.cell_count_x = self.width//self.cell_size_width
         self.cell_count_y = self.height//self.cell_size_height
 
@@ -55,17 +55,30 @@ class Game():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+                if event.type == pygame.KEYUP:
+                    if event.key == pygame.K_LEFT and self.player_curdire != Direction.RIGHT:
+                        self.player_curdire = Direction.LEFT
+                        self.player_move()
+                    if event.key == pygame.K_UP and self.player_curdire != Direction.DOWN:
+                        self.player_curdire = Direction.UP
+                        self.player_move()
+                    if event.key == pygame.K_RIGHT and self.player_curdire != Direction.LEFT:
+                        self.player_curdire = Direction.RIGHT
+                        self.player_move()
+                    if event.key == pygame.K_DOWN and self.player_curdire != Direction.UP:
+                        self.player_curdire = Direction.DOWN
+                        self.player_move()
 
-            key_input = pygame.key.get_pressed()
-            print(self.player_curdire)
-            if key_input[pygame.K_LEFT] and self.player_curdire != Direction.RIGHT:
-                self.player_curdire = Direction.LEFT
-            if key_input[pygame.K_UP] and self.player_curdire != Direction.DOWN:
-                self.player_curdire = Direction.UP
-            if key_input[pygame.K_RIGHT] and self.player_curdire != Direction.LEFT:
-                self.player_curdire = Direction.RIGHT
-            if key_input[pygame.K_DOWN] and self.player_curdire != Direction.UP:
-                self.player_curdire = Direction.DOWN
+            # key_input = pygame.key.get_pressed()
+            #
+            # if key_input[pygame.K_LEFT] and self.player_curdire != Direction.RIGHT:
+            #     self.player_curdire = Direction.LEFT
+            # if key_input[pygame.K_UP] and self.player_curdire != Direction.DOWN:
+            #     self.player_curdire = Direction.UP
+            # if key_input[pygame.K_RIGHT] and self.player_curdire != Direction.LEFT:
+            #     self.player_curdire = Direction.RIGHT
+            # if key_input[pygame.K_DOWN] and self.player_curdire != Direction.UP:
+            #     self.player_curdire = Direction.DOWN
             self.render_cells()
             pygame.display.update()
         pygame.quit()
